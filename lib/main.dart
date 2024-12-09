@@ -1,5 +1,5 @@
-import 'package:expenses/components/chart.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'dart:math';
 import './components/transaction_form.dart';
 import './components/transaction_list.dart';
@@ -11,6 +11,11 @@ main() => runApp(ExpensesApp());
 class ExpensesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Deixar a aplicação apenas na vertical
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    // ]);
+
     final ThemeData tema = ThemeData();
 
     return MaterialApp(
@@ -77,6 +82,24 @@ class _MyHomePageState extends State<MyHomePage> {
       value: 1600.00,
       date: DateTime.now(),
     ),
+    Transaction(
+      id: 't5',
+      title: 'Lanches e Doces',
+      value: 125.00,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't6',
+      title: 'Neuropsicólogo',
+      value: 180.00,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't7',
+      title: 'Advogado',
+      value: 2000.00,
+      date: DateTime.now(),
+    ),
   ];
 
   List<Transaction> get _recentTransactions {
@@ -120,22 +143,46 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
-        title: Text('Despesas Pessoais'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _openTransactionFormModal(context),
-          ),
-        ],
+    final appBar = AppBar(
+      backgroundColor: Colors.deepPurple,
+      title: Text(
+        'Despesas Pessoais',
+        // style: TextStyle(
+        //   fontSize: 20 * MediaQuery.of(context).textScaler.scale(1),
+        // ),
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _openTransactionFormModal(context),
+        ),
+      ],
+    );
+
+    final availableHeight = MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Chart(_recentTransactions),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Exibir Gráfico'),
+                Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+              ],
+            ),
+            Container(
+              height: availableHeight * 0.30,
+              child: Chart(_recentTransactions),
+            ),
             // Container(
             //   width: double.infinity,
             //   child: Card(
@@ -145,7 +192,10 @@ class _MyHomePageState extends State<MyHomePage> {
             //   ),
             // ),
             // TransactionUser(),
-            TransactionList(_transactions, _removeTransaction),
+            Container(
+              height: availableHeight * 0.70,
+              child: TransactionList(_transactions, _removeTransaction),
+            ),
             // Column(
             //   children: <Widget>[
             //     TransactionForm(_addTransaction),
