@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'adaptative_button.dart';
+import 'adaptative_text_field.dart';
+import 'adaptative_date_picker.dart';
 
 class TransactionForm extends StatefulWidget {
   final void Function(String, double, DateTime) onSubmit;
@@ -7,7 +9,9 @@ class TransactionForm extends StatefulWidget {
   TransactionForm(this.onSubmit);
 
   @override
-  _TransactionFormState createState() => _TransactionFormState();
+  _TransactionFormState createState() {
+    return _TransactionFormState();
+  }
 }
 
 class _TransactionFormState extends State<TransactionForm> {
@@ -16,6 +20,11 @@ class _TransactionFormState extends State<TransactionForm> {
   final _valueController = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   _submitForm() {
     final title = _titleController.text;
@@ -26,26 +35,6 @@ class _TransactionFormState extends State<TransactionForm> {
     }
 
     widget.onSubmit(title, value, _selectedDate);
-  }
-
-  _showDatePicker() {
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      // firstDate -> pegar a primeira data para iniciar
-      firstDate: DateTime(2019),
-      // lastDate -> a última date que o usuário pode seleionar
-      lastDate: DateTime.now(),
-    ).then((pickedDate) {
-      if (pickedDate == null) {
-        return;
-      }
-
-      // _selectedDate = pickedDate;
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    });
   }
 
   @override
@@ -62,57 +51,30 @@ class _TransactionFormState extends State<TransactionForm> {
           ),
           child: Column(
             children: <Widget>[
-              TextField(
+              AdaptativeTextField(
+                label: 'Título',
                 controller: _titleController,
                 onSubmitted: (_) => _submitForm(),
-                decoration: InputDecoration(
-                  labelText: 'Título',
-                ),
               ),
-              TextField(
+              AdaptativeTextField(
+                label: 'Valor (R\$)',
                 controller: _valueController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 onSubmitted: (_) => _submitForm(),
-                decoration: InputDecoration(
-                  labelText: 'Valor (R\$)',
-                ),
               ),
-              Container(
-                height: 70,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        _selectedDate == null
-                            ? 'Nenhuma data selecionada!'
-                            : 'Data Selecionada: ${DateFormat('dd/MM/y').format(_selectedDate)}',
-                      ),
-                    ),
-                    TextButton(
-                      child: Text('Selecionar Data'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Theme.of(context).primaryColor,
-                        textStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: _showDatePicker,
-                    ),
-                  ],
-                ),
+              AdaptativeDatePicker(
+                selectedDate: _selectedDate,
+                onDateChanged: (newDate) {
+                  setState(() {
+                    _selectedDate = newDate;
+                  });
+                },
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  ElevatedButton(
-                    child: Text('Nova Transação'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      textStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  AdaptativeButton(
+                    label: 'Nova Transação',
                     onPressed: _submitForm,
                   ),
                 ],
